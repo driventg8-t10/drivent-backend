@@ -25,9 +25,9 @@ export async function getHotelsWithRooms(req: AuthenticatedRequest, res: Respons
   const { hotelId } = req.params;
 
   try {
-    const hotels = await hotelService.getHotelsWithRooms(Number(userId), Number(hotelId));
+    const rooms = await hotelService.getRoomsByHotelId(Number(userId), Number(hotelId));
 
-    return res.status(httpStatus.OK).send(hotels);
+    return res.status(httpStatus.OK).send(rooms);
   } catch (error) {
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
@@ -35,6 +35,6 @@ export async function getHotelsWithRooms(req: AuthenticatedRequest, res: Respons
     if (error.name === "cannotListHotelsError") {
       return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
     }
-    return res.sendStatus(httpStatus.BAD_REQUEST);
+    return res.status(httpStatus.BAD_REQUEST).json({ error });
   }
 }

@@ -3,6 +3,7 @@ import httpStatus from "http-status";
 import supertest from "supertest";
 import { createEvent } from "../factories";
 import { cleanDb } from "../helpers";
+import dayjs from "dayjs";
 
 beforeAll(async () => {
   await init();
@@ -19,7 +20,7 @@ describe("GET /event", () => {
   });
 
   it("should respond with status 200 and event data if there is an event", async () => {
-    const event = await createEvent();
+    const event = await createEvent({ startsAt: dayjs().subtract(1, "day").toDate() });
 
     const response = await server.get("/event");
 

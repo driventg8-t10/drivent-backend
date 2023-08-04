@@ -9,6 +9,6 @@ export async function singInPost(req: Request, res: Response) {
 
     return res.status(httpStatus.OK).send(result);
   } catch (error) {
-    return res.status(httpStatus.UNAUTHORIZED).send({});
+    return res.status(httpStatus.UNAUTHORIZED).send(error);
   }
 }

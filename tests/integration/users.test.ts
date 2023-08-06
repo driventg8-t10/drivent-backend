@@ -1,5 +1,5 @@
 import app, { init } from "@/app";
-import { prisma } from "@/config";
+import { prisma, redis } from "@/config";
 import { duplicatedEmailError } from "@/services/users-service";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
@@ -11,6 +11,8 @@ import { cleanDb } from "../helpers";
 beforeAll(async () => {
   await init();
   await cleanDb();
+  await redis.del('cachedFirstEvent')
+  await redis.del('cachedEvent')
 });
 
 const server = supertest(app);
@@ -56,8 +58,12 @@ describe("POST /users", () => {
     describe("when event started", () => {
       beforeAll(async () => {
         await prisma.event.deleteMany({});
-        await createEvent();
+        await createEvent({ startsAt: dayjs().subtract(1, "day").toDate() });
       });
+      beforeEach(async () => {
+        await redis.del('cachedFirstEvent')
+        await redis.del('cachedEvent')
+      })
 
       it("should respond with status 409 when there is an user with given email", async () => {
         const body = generateValidBody();

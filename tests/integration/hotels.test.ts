@@ -1,5 +1,5 @@
 import app, { init } from "@/app";
-import { prisma } from "@/config";
+import { prisma, redis } from "@/config";
 import faker from "@faker-js/faker";
 import { TicketStatus } from "@prisma/client";
 import e from "express";
@@ -26,6 +26,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await cleanDb();
+  redis.del('cachedHotel')
+  redis.del('cachedRoom')
 });
 
 const server = supertest(app);

@@ -1,20 +1,16 @@
 import { prisma } from "@/config";
 
 async function findHotels() {
-  return prisma.hotel.findMany({
-    include: {
-      Rooms: true
-    }
-  });
+  return prisma.hotel.findMany();
 }
 
 async function findRoomsByHotelId(hotelId: number) {
-  return prisma.room.findMany({
+  return prisma.hotel.findFirst({
     where: {
-      hotelId
+      id: hotelId
     },
     include: {
-      Booking: true,
+      Rooms: true
     }
   });
 }

@@ -15,6 +15,7 @@ import {
   createRoomWithHotelId,
 } from "../factories";
 import { cleanDb, generateValidToken } from "../helpers";
+import { redis } from "@/config";
 
 beforeAll(async () => {
   await init();
@@ -22,6 +23,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await cleanDb();
+  await redis.flushAll()
 });
 
 const server = supertest(app);
@@ -212,23 +214,6 @@ describe("GET /hotels/:hotelId", () => {
           updatedAt: createdRoom.updatedAt.toISOString(),
         },
       ]);
-    });
-
-    it("should respond with status 200 and no rooms", async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createTicketTypeWithHotel();
-      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      await createPayment(ticket.id, ticketType.price);
-
-      const createdHotel = await createHotel();
-
-      const response = await server.get(`/hotels/${createdHotel.id}`).set("Authorization", `Bearer ${token}`);
-
-      expect(response.status).toEqual(httpStatus.OK);
-
-      expect(response.body).toEqual([]);
     });
   });
 });

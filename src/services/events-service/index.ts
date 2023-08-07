@@ -1,3 +1,4 @@
+/* eslint-disable boundaries/element-types */
 import { DEFAULT_EXP, redis } from "@/config";
 import { notFoundError } from "@/errors";
 import eventRepository from "@/repositories/event-repository";
@@ -6,28 +7,25 @@ import { Event } from "@prisma/client";
 import dayjs from "dayjs";
 
 async function getFirstEvent() {
-
-  const cachedEvent = await redis.get('cachedFirstEvent')
+  const cachedEvent = await redis.get("cachedFirstEvent");
   if (cachedEvent) {
-
     return exclude(JSON.parse(cachedEvent), "createdAt", "updatedAt");
   }
   else {
     const event = await eventRepository.findFirst();
-    redis.setEx('cachedFirstEvent', DEFAULT_EXP, JSON.stringify(event));
+    redis.setEx("cachedFirstEvent", DEFAULT_EXP, JSON.stringify(event));
     if (!event) throw notFoundError();
 
     return exclude(event, "createdAt", "updatedAt");
   }
 }
 
-
 export type GetFirstEventResult = Omit<Event, "createdAt" | "updatedAt">;
 
 async function isCurrentEventActive(): Promise<boolean> {
-  const cachedEvent = await redis.get('cachedEvent');
+  const cachedEvent = await redis.get("cachedEvent");
 
-  if (cachedEvent !== null && cachedEvent !== 'null') {
+  if (cachedEvent !== null && cachedEvent !== "null") {
     const parsedEvent = JSON.parse(cachedEvent);
     const now = dayjs();
     const eventStartsAt = dayjs(parsedEvent.startsAt);
@@ -35,7 +33,7 @@ async function isCurrentEventActive(): Promise<boolean> {
     return now.isAfter(eventStartsAt) && now.isBefore(eventEndsAt);
   } else {
     const event = await eventRepository.findFirst();
-    redis.setEx('cachedEvent', DEFAULT_EXP, JSON.stringify(event));
+    redis.setEx("cachedEvent", DEFAULT_EXP, JSON.stringify(event));
     if (!event) return false;
 
     const now = dayjs();

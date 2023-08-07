@@ -10,9 +10,9 @@ beforeAll(async () => {
   await init();
   await cleanDb();
 });
-beforeEach( async () => {
-  await redis.flushAll()
-})
+beforeEach(async () => {
+  await redis.flushAll();
+});
 
 const server = supertest(app);
 

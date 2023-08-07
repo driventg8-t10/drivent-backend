@@ -4,11 +4,15 @@ import supertest from "supertest";
 import { createEvent } from "../factories";
 import { cleanDb } from "../helpers";
 import dayjs from "dayjs";
+import { redis } from "@/config";
 
 beforeAll(async () => {
   await init();
   await cleanDb();
 });
+beforeEach( async () => {
+  await redis.flushAll()
+})
 
 const server = supertest(app);
 
@@ -20,7 +24,7 @@ describe("GET /event", () => {
   });
 
   it("should respond with status 200 and event data if there is an event", async () => {
-    const event = await createEvent({ startsAt: dayjs().subtract(1, "day").toDate() });
+    const event = await createEvent();
 
     const response = await server.get("/event");
 

@@ -1,5 +1,5 @@
 import app, { init } from "@/app";
-import { prisma } from "@/config";
+import { prisma, redis } from "@/config";
 import faker from "@faker-js/faker";
 import { TicketStatus } from "@prisma/client";
 import e from "express";
@@ -27,6 +27,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await cleanDb();
+  await redis.flushAll()
 });
 
 const server = supertest(app);
@@ -89,18 +90,35 @@ describe("GET /booking", () => {
       });
 
       const response = await server.get("/booking").set("Authorization", `Bearer ${token}`);
-
+      console.log(response.body)
       expect(response.status).toEqual(httpStatus.OK);
       expect(response.body).toEqual({
         id: booking.id,
         Room: {
+          Booking: [
+            {
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+              id: expect.any(Number),
+              roomId: expect.any(Number),
+              userId: expect.any(Number),
+            }
+          ],
           id: expect.any(Number),
           name: expect.any(String),
           capacity: expect.any(Number),
           hotelId: expect.any(Number),
           createdAt: expect.any(String),
-          updatedAt: expect.any(String)
+          updatedAt: expect.any(String),
+          Hotel: {
+            id: expect.any(Number),
+            name: expect.any(String),
+            image: expect.any(String),
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          }
         },
+
       });
     });
   });

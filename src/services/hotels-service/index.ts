@@ -34,17 +34,33 @@ async function getHotels(userId: number) {
 async function getRoomsByHotelId(userId: number, hotelId: number) {
   await listHotels(userId);
 
-  const cachedRoom = await redis.get('cachedRoom')
-  if (cachedRoom) return JSON.parse(cachedRoom);
+  const cachedHotel = await redis.get('cachedHotel')
+
+  if (cachedHotel) return JSON.parse(cachedHotel)
+
   else {
-    const room = await hotelRepository.findRoomsByHotelId(hotelId);
-    redis.setEx('cachedRoom', DEFAULT_EXP, JSON.stringify(room));
-  if (!room) {
-    throw notFoundError();
+    const hotel = await hotelRepository.findRoomsByHotelId(hotelId);
+
+    if (!hotel) {
+      throw notFoundError();
+    }
+    redis.setEx('cachedHotel', DEFAULT_EXP, JSON.stringify(hotel));
+    return hotel;
   }
-  return room;
-  }
-  
+
+  // await listHotels(userId);
+
+  // const cachedRoom = await redis.get('cachedRoom')
+  // if (cachedRoom) return JSON.parse(cachedRoom);
+  // else {
+  //   const room = await hotelRepository.findRoomsByHotelId(hotelId);
+  //   redis.setEx('cachedRoom', DEFAULT_EXP, JSON.stringify(room));
+  // if (!room) {
+  //   throw notFoundError();
+  // }
+  // return room;
+  // }
+
 }
 
 const hotelService = {

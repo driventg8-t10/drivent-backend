@@ -11,8 +11,8 @@ import { cleanDb } from "../helpers";
 beforeAll(async () => {
   await init();
   await cleanDb();
-  await redis.del('cachedFirstEvent')
-  await redis.del('cachedEvent')
+  await redis.del("cachedFirstEvent");
+  await redis.del("cachedEvent");
 });
 
 const server = supertest(app);
@@ -61,9 +61,9 @@ describe("POST /users", () => {
         await createEvent({ startsAt: dayjs().subtract(1, "day").toDate() });
       });
       beforeEach(async () => {
-        await redis.del('cachedFirstEvent')
-        await redis.del('cachedEvent')
-      })
+        await redis.del("cachedFirstEvent");
+        await redis.del("cachedEvent");
+      });
 
       it("should respond with status 409 when there is an user with given email", async () => {
         const body = generateValidBody();

@@ -19,6 +19,7 @@ model User {
   Session    Session[]
   Enrollment Enrollment[]
   Booking    Booking[]
+  Activities Activity[]
 }
 
 model Session {
@@ -137,4 +138,24 @@ model Booking {
   roomId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Activity {
+  id         Int      @id @default(autoincrement()) 
+
+  name       String
+
+  startDate  DateTime 
+
+  endDate    DateTime 
+
+  vagancies  Int
+
+  locale     String
+
+  userId     Int
+
+  User User[]
+
+  @@map("Activities")
 }

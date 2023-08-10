@@ -27,7 +27,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await cleanDb();
-  await redis.flushAll()
+  await redis.flushAll();
 });
 
 const server = supertest(app);
@@ -90,7 +90,7 @@ describe("GET /booking", () => {
       });
 
       const response = await server.get("/booking").set("Authorization", `Bearer ${token}`);
-      console.log(response.body)
+      console.log(response.body);
       expect(response.status).toEqual(httpStatus.OK);
       expect(response.body).toEqual({
         id: booking.id,

@@ -1,4 +1,5 @@
 import { prisma } from "@/config";
+import dayjs from "dayjs";
 
 async function getActivities() {
   return prisma.activity.findMany({
@@ -15,6 +16,29 @@ async function enrollOnActivity(userId: number, activityId: number) {
       userId
     }
   })
+}
+
+async function getPlace(date: string) {
+  const dayjsdate = dayjs(date);
+
+  const specificDate = dayjsdate;
+
+  const startDate = specificDate.startOf('day');
+
+  const endDate = specificDate.add(1, 'day').startOf('day');
+
+  return await prisma.place.findMany({
+    include: {
+      Activity: {
+        where: {
+          startDate: {
+            gte: startDate.toDate(),
+            lt: endDate.toDate()
+          }
+        }
+      }
+    },
+  });
 }
 
 async function getActivity(activityId: number) {
@@ -67,7 +91,8 @@ const activityRepository = {
   getActivities,
   enrollOnActivity,
   getActivityEnrollments,
-  getActivity
+  getActivity,
+  getPlace
 }
 
 export default activityRepository

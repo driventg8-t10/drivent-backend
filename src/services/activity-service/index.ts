@@ -4,8 +4,8 @@ import { unpaidError } from "@/errors/unpaid-error";
 import activityRepository from "@/repositories/activity-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 
-async function getActivities() {
-  const activities = await activityRepository.getActivities()
+async function getActivities(date: string) {
+  const activities = await activityRepository.getPlace(date)
   if (!activities) {
     throw notFoundError();
   }

@@ -4,8 +4,9 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 
 export async function getActivities(req: Request, res: Response) {
+    const { date } = req.params
 
-    const activities = await activityService.getActivities()
+    const activities = await activityService.getActivities(date)
 
     return res.status(httpStatus.OK).send(activities);
 }

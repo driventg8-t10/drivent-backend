@@ -1,9 +1,11 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, unauthorizedError } from "@/errors";
 import { ActivityFullError } from "@/errors/activity-full-error";
+import { unpaidError } from "@/errors/unpaid-error";
 import activityRepository from "@/repositories/activity-repository";
+import ticketRepository from "@/repositories/ticket-repository";
 
-async function getActivities() {
-  const activities = await activityRepository.getActivities()
+async function getActivities(date: string) {
+  const activities = await activityRepository.getPlace(date)
   if (!activities) {
     throw notFoundError();
   }
@@ -19,7 +21,11 @@ async function getActivityById(activityId: number) {
   return activity
 }
 
-async function enrollOnActivity(userId: number, activityId: number) {
+async function enrollOnActivity(userId: number, activityId: number, ticketId: number) {
+  const checkTicket = await ticketRepository.findTickeyById(ticketId)
+  if (checkTicket.Enrollment.userId !== userId) throw unauthorizedError()
+  if (checkTicket.status !== "PAID") throw unpaidError()
+
   const checkCapacity = await activityRepository.getActivity(activityId)
   if( checkCapacity.capacity <= checkCapacity.ActivityEnrollment.length) throw ActivityFullError()
 

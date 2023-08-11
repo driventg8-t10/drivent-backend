@@ -5,7 +5,7 @@ import { Router } from "express";
 
 const activityRouter = Router();
 
-activityRouter.get("/", authenticateToken, getActivities);
+activityRouter.get("/:date", authenticateToken, getActivities);
 activityRouter.post("/", authenticateToken, validateBody(activitySchema), enrollOnActivity)
 activityRouter.get("/:id", authenticateToken, getActivityById)
 

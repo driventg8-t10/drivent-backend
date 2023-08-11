@@ -15,6 +15,13 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
     });
   }
 
+  if (err.name === "unpaidError") {
+    return res.status(httpStatus.PAYMENT_REQUIRED).send({
+      message: err.message,
+    });
+  }
+  
+
   if (err.name === "ActivityFullError") {
     return res.status(httpStatus.FORBIDDEN).send({
       message: err.message,

@@ -12,8 +12,8 @@ export async function getActivities(req: Request, res: Response) {
 
 export async function enrollOnActivity(req: AuthenticatedRequest, res: Response) {
     const { userId } = req;
-    const { activityId } = req.body
-    const enrollment = await activityService.enrollOnActivity(userId, activityId)
+    const { activityId, ticketId } = req.body
+    const enrollment = await activityService.enrollOnActivity(userId, activityId, ticketId)
 
     return res.status(httpStatus.OK).send(enrollment)
 }

@@ -28,6 +28,30 @@ async function getActivity(activityId: number) {
   })
 }
 
+async function getByDate(date: string) {
+  const specificDate = new Date(date); // Data específica que você deseja buscar
+
+// Configure o início do dia específico
+const startDate = new Date(specificDate);
+startDate.setHours(0, 0, 0, 0);
+
+// Configure o término do dia seguinte ao específico
+const endDate = new Date(specificDate);
+endDate.setDate(endDate.getDate() + 1);
+endDate.setHours(0, 0, 0, 0);
+
+const activitiesOnSpecificDate = await prisma.activity.findMany({
+  where: {
+    startDate: {
+      gte: startDate,
+      lt: endDate,
+    },
+  },
+});
+}
+
+
+
 async function getActivityEnrollments(activityId:number) {
   return prisma.activityEnrollment.findMany({
     where: {

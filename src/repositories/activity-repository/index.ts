@@ -35,6 +35,9 @@ async function getPlace(date: string) {
             gte: startDate.toDate(),
             lt: endDate.toDate()
           }
+        },
+        include: {
+          ActivityEnrollment: true
         }
       }
     },

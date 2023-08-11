@@ -37,11 +37,7 @@ async function getPlace(date: string) {
           }
         },
         include: {
-          ActivityEnrollment: {
-            select: {
-              id: true
-            }
-          }
+          ActivityEnrollment: true
         }
       }
     },

@@ -4,18 +4,26 @@ import dayjs from "dayjs";
 async function getActivities() {
   return prisma.activity.findMany({
     include: {
-      ActivityEnrollment: true
-    }
-  })
+      ActivityEnrollment: true,
+    },
+  });
+}
+
+async function getActivitiesCountByUserId(userId: number) {
+  return prisma.activityEnrollment.count({
+    where: {
+      userId: userId,
+    },
+  });
 }
 
 async function enrollOnActivity(userId: number, activityId: number) {
   return prisma.activityEnrollment.create({
     data: {
       activityId,
-      userId
-    }
-  })
+      userId,
+    },
+  });
 }
 
 async function getPlace(date: string) {
@@ -47,12 +55,12 @@ async function getPlace(date: string) {
 async function getActivity(activityId: number) {
   return prisma.activity.findFirst({
     where: {
-      id: activityId
+      id: activityId,
     },
     include: {
       ActivityEnrollment: true
-    }
-  })
+    },
+  });
 }
 
 async function getEnrollmentByUserId(userId: number) {
@@ -71,12 +79,12 @@ async function getEnrollmentByUserId(userId: number) {
 async function getActivityEnrollments(activityId: number) {
   return prisma.activityEnrollment.findMany({
     where: {
-      activityId
+      activityId,
     },
     include: {
-      Activity: true
-    }
-  })
+      Activity: true,
+    },
+  });
 }
 
 const activityRepository = {
@@ -85,7 +93,6 @@ const activityRepository = {
   getActivityEnrollments,
   getActivity,
   getPlace,
+  getActivitiesCountByUserId,
   getEnrollmentByUserId
 }
-
-export default activityRepository

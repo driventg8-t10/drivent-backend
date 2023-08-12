@@ -146,8 +146,9 @@ model Activity {
   startDate          DateTime
   endDate            DateTime
   capacity           Int
-  place              String
   ActivityEnrollment ActivityEnrollment[]
+  Place              Place?               @relation(fields: [placeId], references: [id])
+  placeId            Int?
 
   @@map("Activities")
 }
@@ -160,3 +161,8 @@ model ActivityEnrollment {
   Activity   Activity @relation(fields: [activityId], references: [id])
 }
 
+model Place {
+  id       Int        @id @default(autoincrement())
+  name     String
+  Activity Activity[]
+}

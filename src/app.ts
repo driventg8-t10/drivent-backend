@@ -18,6 +18,7 @@ import {
   hotelsRouter,
   bookingRouter,
   oAuthRouter,
+  certificateRouter,
 } from "@/routers";
 import { activityRouter } from "./routers/activity-router";
 
@@ -36,6 +37,7 @@ app
   .use("/hotels", hotelsRouter)
   .use("/booking", bookingRouter)
   .use("/activity", activityRouter)
+  .use("/certificate", certificateRouter)
   .use(handleApplicationErrors);
 
 export function init(): Promise<Express> {

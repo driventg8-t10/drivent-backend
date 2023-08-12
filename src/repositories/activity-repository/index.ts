@@ -3,47 +3,56 @@ import { prisma } from "@/config";
 async function getActivities() {
   return prisma.activity.findMany({
     include: {
-      ActivityEnrollment: true
-    }
-  })
+      ActivityEnrollment: true,
+    },
+  });
+}
+
+async function getActivitiesCountByUserId(userId: number) {
+  return prisma.activityEnrollment.count({
+    where: {
+      userId: userId,
+    },
+  });
 }
 
 async function enrollOnActivity(userId: number, activityId: number) {
   return prisma.activityEnrollment.create({
     data: {
       activityId,
-      userId
-    }
-  })
+      userId,
+    },
+  });
 }
 
 async function getActivity(activityId: number) {
   return prisma.activity.findFirst({
     where: {
-      id: activityId
+      id: activityId,
     },
     include: {
-      ActivityEnrollment: true
-    }
-  })
+      ActivityEnrollment: true,
+    },
+  });
 }
 
-async function getActivityEnrollments(activityId:number) {
+async function getActivityEnrollments(activityId: number) {
   return prisma.activityEnrollment.findMany({
     where: {
-      activityId
+      activityId,
     },
     include: {
-      Activity: true
-    }
-  })
+      Activity: true,
+    },
+  });
 }
 
 const activityRepository = {
   getActivities,
   enrollOnActivity,
   getActivityEnrollments,
-  getActivity
-}
+  getActivity,
+  getActivitiesCountByUserId,
+};
 
-export default activityRepository
+export default activityRepository;

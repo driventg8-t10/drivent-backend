@@ -13,14 +13,14 @@ export async function getActivities(req: Request, res: Response) {
 
 export async function enrollOnActivity(req: AuthenticatedRequest, res: Response) {
     const { userId } = req;
-    const { activityId, ticketId } = req.body
-    const enrollment = await activityService.enrollOnActivity(userId, activityId, ticketId)
+    const { activityId } = req.body
+    const enrollment = await activityService.enrollOnActivity(userId, activityId)
 
     return res.status(httpStatus.OK).send(enrollment)
 }
 
 export async function getActivityById(req: AuthenticatedRequest, res: Response) {
-    const activityId  = parseInt(req.params.id)
+    const activityId = parseInt(req.params.id)
 
     const activity = await activityService.getActivityById(activityId)
 

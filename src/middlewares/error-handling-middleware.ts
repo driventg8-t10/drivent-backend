@@ -20,7 +20,12 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
       message: err.message,
     });
   }
-  
+
+  if (err.name === "ScheduleConflictError") {
+    return res.status(httpStatus.CONFLICT).send({
+      message: err.message,
+    });
+  }
 
   if (err.name === "ActivityFullError") {
     return res.status(httpStatus.FORBIDDEN).send({

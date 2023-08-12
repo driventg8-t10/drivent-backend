@@ -1,8 +1,11 @@
 import { notFoundError, unauthorizedError } from "@/errors";
 import { ActivityFullError } from "@/errors/activity-full-error";
+import { ScheduleConflictError } from "@/errors/schedule-conflict-error";
 import { unpaidError } from "@/errors/unpaid-error";
 import activityRepository from "@/repositories/activity-repository";
+import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
+import dayjs from "dayjs";
 
 async function getActivities(date: string) {
   const activities = await activityRepository.getPlace(date)
@@ -16,19 +19,36 @@ async function getActivities(date: string) {
 async function getActivityById(activityId: number) {
   const activity = await activityRepository.getActivity(activityId)
 
-  if(!activity) throw notFoundError()
+  if (!activity) throw notFoundError()
 
   return activity
 }
 
-async function enrollOnActivity(userId: number, activityId: number, ticketId: number) {
-  const checkTicket = await ticketRepository.findTickeyById(ticketId)
-  if (checkTicket.Enrollment.userId !== userId) throw unauthorizedError()
-  if (checkTicket.status !== "PAID") throw unpaidError()
+async function enrollOnActivity(userId: number, activityId: number) {
+  const checkTicket = await enrollmentRepository.findEnrollmentByUserId(userId)
+  if (checkTicket.Ticket.length === 0) throw unauthorizedError()
+  if (checkTicket.Ticket[0].status !== "PAID") throw unpaidError()
 
-  const checkCapacity = await activityRepository.getActivity(activityId)
-  if( checkCapacity.capacity <= checkCapacity.ActivityEnrollment.length) throw ActivityFullError()
+  const newActivity = await activityRepository.getActivity(activityId)
+  if (newActivity.capacity <= newActivity.ActivityEnrollment.length) throw ActivityFullError()
 
+  const existingActivity = await activityRepository.getEnrollmentByUserId(userId);
+  if (existingActivity) {
+    const existingActivityStartTime = dayjs(existingActivity.startDate);
+    const existingActivityEndTime = dayjs(existingActivity.endDate);
+
+    const newActivityStartTime = dayjs(newActivity.startDate);
+    const newActivityEndTime = dayjs(newActivity.endDate);
+
+    if (
+      (newActivityStartTime >= existingActivityStartTime &&
+        newActivityStartTime <= existingActivityEndTime) ||
+      (newActivityEndTime >= existingActivityStartTime &&
+        newActivityEndTime <= existingActivityEndTime)
+    ) {
+      throw ScheduleConflictError();
+    }
+  }
   const enrollment = await activityRepository.enrollOnActivity(userId, activityId)
 
   return enrollment

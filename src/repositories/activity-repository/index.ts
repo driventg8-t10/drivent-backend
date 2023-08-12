@@ -4,18 +4,26 @@ import dayjs from "dayjs";
 async function getActivities() {
   return prisma.activity.findMany({
     include: {
-      ActivityEnrollment: true
-    }
-  })
+      ActivityEnrollment: true,
+    },
+  });
+}
+
+async function getActivitiesCountByUserId(userId: number) {
+  return prisma.activityEnrollment.count({
+    where: {
+      userId: userId,
+    },
+  });
 }
 
 async function enrollOnActivity(userId: number, activityId: number) {
   return prisma.activityEnrollment.create({
     data: {
       activityId,
-      userId
-    }
-  })
+      userId,
+    },
+  });
 }
 
 async function getPlace(date: string) {
@@ -47,12 +55,12 @@ async function getPlace(date: string) {
 async function getActivity(activityId: number) {
   return prisma.activity.findFirst({
     where: {
-      id: activityId
+      id: activityId,
     },
     include: {
-      ActivityEnrollment: true
-    }
-  })
+      ActivityEnrollment: true,
+    },
+  });
 }
 
 async function getByDate(date: string) {
@@ -77,17 +85,15 @@ const activitiesOnSpecificDate = await prisma.activity.findMany({
 });
 }
 
-
-
-async function getActivityEnrollments(activityId:number) {
+async function getActivityEnrollments(activityId: number) {
   return prisma.activityEnrollment.findMany({
     where: {
-      activityId
+      activityId,
     },
     include: {
-      Activity: true
-    }
-  })
+      Activity: true,
+    },
+  });
 }
 
 const activityRepository = {
@@ -95,7 +101,8 @@ const activityRepository = {
   enrollOnActivity,
   getActivityEnrollments,
   getActivity,
-  getPlace
-}
+  getActivitiesCountByUserId,
+  getPlace,
+};
 
-export default activityRepository
+export default activityRepository;

@@ -96,3 +96,5 @@ const activityRepository = {
   getActivitiesCountByUserId,
   getEnrollmentByUserId
 }
+
+export default activityRepository

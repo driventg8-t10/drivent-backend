@@ -1,10 +1,10 @@
-import { notFoundError, unauthorizedError } from "@/errors";
+import { conflictError, notFoundError, unauthorizedError } from "@/errors";
 import { ActivityFullError } from "@/errors/activity-full-error";
 import { ScheduleConflictError } from "@/errors/schedule-conflict-error";
 import { unpaidError } from "@/errors/unpaid-error";
+import { userAlreadyEnrolledError } from "@/errors/user-already-enrolled-error";
 import activityRepository from "@/repositories/activity-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
-import ticketRepository from "@/repositories/ticket-repository";
 import dayjs from "dayjs";
 
 async function getActivities(date: string) {
@@ -28,8 +28,18 @@ async function enrollOnActivity(userId: number, activityId: number) {
   const checkTicket = await enrollmentRepository.findEnrollmentByUserId(userId)
   if (checkTicket.Ticket.length === 0) throw unauthorizedError()
   if (checkTicket.Ticket[0].status !== "PAID") throw unpaidError()
-
+  
   const newActivity = await activityRepository.getActivity(activityId)
+  if (!newActivity) throw notFoundError()
+  
+  const isUserEnrolled = newActivity.ActivityEnrollment.some(
+    enrollment => enrollment.userId === userId
+  );
+  
+  if (isUserEnrolled) {
+    throw userAlreadyEnrolledError()
+  }
+  
   if (newActivity.capacity <= newActivity.ActivityEnrollment.length) throw ActivityFullError()
 
   const existingActivity = await activityRepository.getEnrollmentByUserId(userId);

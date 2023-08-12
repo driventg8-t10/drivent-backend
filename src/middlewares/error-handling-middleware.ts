@@ -27,6 +27,12 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
     });
   }
 
+  if (err.name === "userAlreadyEnrolledError") {
+    return res.status(httpStatus.CONFLICT).send({
+      message: err.message,
+    });
+  }
+
   if (err.name === "ScheduleConflictError") {
     return res.status(httpStatus.CONFLICT).send({
       message: err.message,
@@ -64,7 +70,6 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
   }
 
   /* eslint-disable-next-line no-console */
-  console.error(err.name);
   res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
     error: "InternalServerError",
     message: "Internal Server Error",

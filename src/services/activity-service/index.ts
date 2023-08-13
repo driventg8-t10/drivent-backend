@@ -55,12 +55,10 @@ async function enrollOnActivity(userId: number, activityId: number) {
     for (const activity of existingActivity) {
       const existingActivityStartTime = dayjs(activity.startDate);
       const existingActivityEndTime = dayjs(activity.endDate);
-
       if (
         newActivityStartTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') ||
-        newActivityEndTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') ||
-        existingActivityStartTime.isBetween(newActivityStartTime, newActivityEndTime, "milliseconds", '[]') ||
-        existingActivityEndTime.isBetween(newActivityStartTime, newActivityEndTime, "milliseconds", '[]')
+        newActivityEndTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') || 
+        (newActivityStartTime.isBefore(existingActivityStartTime) && newActivityEndTime.isAfter(existingActivityEndTime))
       ) {
         throw ScheduleConflictError();
       }

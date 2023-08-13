@@ -1,5 +1,7 @@
 import { conflictError, notFoundError, unauthorizedError } from "@/errors";
 import isBetween from "dayjs/plugin/isBetween";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { ActivityFullError } from "@/errors/activity-full-error";
 import { ScheduleConflictError } from "@/errors/schedule-conflict-error";
 import { unpaidError } from "@/errors/unpaid-error";
@@ -9,6 +11,8 @@ import enrollmentRepository from "@/repositories/enrollment-repository";
 import dayjs from "dayjs";
 
 dayjs.extend(isBetween);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore)
 
 async function getActivities(date: string) {
   const activities = await activityRepository.getPlace(date)
@@ -50,14 +54,14 @@ async function enrollOnActivity(userId: number, activityId: number) {
   const newActivityStartTime = dayjs(newActivity.startDate);
   const newActivityEndTime = dayjs(newActivity.endDate);
   const existingActivity = await activityRepository.getEnrollmentByUserId(userId, newActivityStartTime, newActivityEndTime);
-
   if (existingActivity) {
     for (const activity of existingActivity) {
+      console.log(activity)
       const existingActivityStartTime = dayjs(activity.startDate);
       const existingActivityEndTime = dayjs(activity.endDate);
       if (
-        newActivityStartTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') ||
-        newActivityEndTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') || 
+        (newActivityStartTime.isSameOrAfter(existingActivityStartTime) && newActivityStartTime.isBefore(existingActivityEndTime)) ||
+        (newActivityEndTime.isAfter(existingActivityStartTime) && newActivityEndTime.isSameOrBefore(existingActivityEndTime)) ||
         (newActivityStartTime.isBefore(existingActivityStartTime) && newActivityEndTime.isAfter(existingActivityEndTime))
       ) {
         throw ScheduleConflictError();

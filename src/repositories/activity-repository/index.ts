@@ -65,6 +65,13 @@ async function getActivity(activityId: number) {
 
 async function getEnrollmentByUserId(userId: number, newActivityStartTime: dayjs.Dayjs, newActivityEndTime: dayjs.Dayjs) {
   return prisma.activity.findMany({
+    where: {
+      ActivityEnrollment: {
+        some: {
+          userId
+        }
+      }
+    },
     include: {
       ActivityEnrollment: {
         where: {

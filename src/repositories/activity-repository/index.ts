@@ -63,8 +63,8 @@ async function getActivity(activityId: number) {
   });
 }
 
-async function getEnrollmentByUserId(userId: number) {
-  return prisma.activity.findFirst({
+async function getEnrollmentByUserId(userId: number, newActivityStartTime: dayjs.Dayjs, newActivityEndTime: dayjs.Dayjs) {
+  return prisma.activity.findMany({
     include: {
       ActivityEnrollment: {
         where: {

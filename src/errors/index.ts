@@ -7,4 +7,5 @@ export * from "./unauthorized-error";
 export * from "./request-error";
 export * from "./cannot-booking-error";
 export * from "./not-enough-acivities-error";
-export * from "./user-already-enrolled-error"
+export * from "./user-already-enrolled-error";
+export * from "./schedule-conflict-error";

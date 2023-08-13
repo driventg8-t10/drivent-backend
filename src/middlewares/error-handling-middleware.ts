@@ -1,8 +1,14 @@
 import { ApplicationError } from "@/protocols";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
-export function handleApplicationErrors(err: ApplicationError | Error, _req: Request, res: Response) {
+export function handleApplicationErrors(err: ApplicationError | Error, _req: Request, res: Response, _next: NextFunction,) {
+  if (err.name === "ScheduleConflictError") {
+    return res.status(httpStatus.CONFLICT).send({
+      message: err.message,
+    });
+  }
+
   if (err.name === "NotEnoughActivitiesError") {
     return res.status(httpStatus.FORBIDDEN).send({
       message: err.message,
@@ -28,12 +34,6 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
   }
 
   if (err.name === "userAlreadyEnrolledError") {
-    return res.status(httpStatus.CONFLICT).send({
-      message: err.message,
-    });
-  }
-
-  if (err.name === "ScheduleConflictError") {
     return res.status(httpStatus.CONFLICT).send({
       message: err.message,
     });

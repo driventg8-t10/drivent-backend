@@ -58,9 +58,7 @@ async function enrollOnActivity(userId: number, activityId: number) {
 
       if (
         newActivityStartTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') ||
-        newActivityEndTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]') ||
-        existingActivityStartTime.isBetween(newActivityStartTime, newActivityEndTime, "milliseconds", '[]') ||
-        existingActivityEndTime.isBetween(newActivityStartTime, newActivityEndTime, "milliseconds", '[]')
+        newActivityEndTime.isBetween(existingActivityStartTime, existingActivityEndTime, "milliseconds", '[]')
       ) {
         throw ScheduleConflictError();
       }
